@@ -1,6 +1,6 @@
 package com.example.check_java_oop.model;
 
-import java.util.Set;
+import java.util.ArrayList;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,34 +11,32 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "user_class")
 public class UserClass {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "user_class_id")
+  @Column
   private int id;
-  @Column(name = "name")
+  @Column
   @NotNull
   private String name;
-  @Column(name = "modifier")
+  @Column
   @NotNull
   private String modifier;
-  @Column(name = "extend")
+  @Column
   private String extend;
-  @Column(name = "implement")
-  private String implement;
-  @OneToMany(mappedBy="user_variable", cascade = CascadeType.ALL)
-  private Set<UserVariable> userVariables;
-  @OneToMany(mappedBy="user_method", cascade = CascadeType.ALL)
-  private Set<UserMethod> userMethods;
+  @Column
+  private ArrayList<String> implement;
+  @OneToMany(mappedBy="userClass", cascade = CascadeType.ALL)
+  private ArrayList<UserVariable> userVariables;
+  @OneToMany(mappedBy="userClass", cascade = CascadeType.ALL)
+  private ArrayList<UserMethod> userMethods;
   @ManyToOne
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
@@ -70,27 +68,28 @@ public class UserClass {
     this.extend = extend;
   }
 
-  public String getImplement() {
+
+  public ArrayList<String> getImplement() {
     return this.implement;
   }
 
-  public void setImplement(String implement) {
+  public void setImplement(ArrayList<String> implement) {
     this.implement = implement;
   }
 
-  public Set<UserVariable> getUserVariables() {
+  public ArrayList<UserVariable> getUserVariables() {
     return this.userVariables;
   }
 
-  public void setUserVariables(Set<UserVariable> userVariables) {
+  public void setUserVariables(ArrayList<UserVariable> userVariables) {
     this.userVariables = userVariables;
   }
 
-  public Set<UserMethod> getUserMethods() {
+  public ArrayList<UserMethod> getUserMethods() {
     return this.userMethods;
   }
 
-  public void setUserMethods(Set<UserMethod> userMethods) {
+  public void setUserMethods(ArrayList<UserMethod> userMethods) {
     this.userMethods = userMethods;
   }
 
@@ -100,6 +99,25 @@ public class UserClass {
 
   public void setUser(User user) {
     this.user = user;
+  }
+
+  @Override
+  public String toString(){
+    String s;
+    s = "<class name=\"" + name +"\" "
+            +"modifier=\"" + modifier +"\" "
+            +"extends=\"" + extend +"\" "
+            +"implements=\"" ;
+    
+    for(int i = 0; i < implement.size() ; i++){
+        if(i == implement.size() - 1){
+            s += implement.get(i);
+            break;
+        }
+        s += implement.get(i) +" ";
+    }
+    s += "\">\n";
+    return s;
   }
 
 }

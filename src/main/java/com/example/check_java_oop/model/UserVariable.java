@@ -19,15 +19,15 @@ public class UserVariable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "user_variable_id")
+  @Column
   private int id;
-  @Column(name = "name")
+  @Column
   @NotNull
   private String name;
-  @Column(name = "type")
+  @Column
   @NotNull
   private String type;
-  @Column(name = "modifier")
+  @Column
   @NotNull
   private String modifier;
   @ManyToOne
@@ -78,6 +78,15 @@ public class UserVariable {
 
   public void setUserClass(UserClass userClass) {
     this.userClass = userClass;
+  }
+
+  @Override
+  public String toString(){
+    String s;
+    s = "<variable name=\"" + name +"\" "
+          +"type=\"" + type +"\" "
+          +"modifier=\"" + modifier +"\"/>\n";
+    return s;
   }
 
 }

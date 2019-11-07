@@ -1,6 +1,6 @@
 package com.example.check_java_oop.model;
 
-import java.util.Set;
+import java.util.ArrayList;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,19 +23,19 @@ public class UserMethod {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "user_method_id")
+  @Column
   private int id;
-  @Column(name = "name")
+  @Column
   @NotNull
   private String name;
   @Column(name = "return_type")
   @NotNull
   private String returnType;
-  @Column(name = "modifier")
+  @Column
   @NotNull
   private String modifier;
-  @OneToMany(mappedBy="user_variable", cascade = CascadeType.ALL)
-  private Set<UserVariable> userVariables;
+  @OneToMany(mappedBy="userMethod", cascade = CascadeType.ALL)
+  private ArrayList<UserVariable> userVariables;
   @ManyToOne
   @JoinColumn(name = "user_class_id", nullable = false)
   private UserClass userClass;
@@ -67,11 +67,11 @@ public class UserMethod {
     this.modifier = modifier;
   }
 
-  public Set<UserVariable> getUserVariables() {
+  public ArrayList<UserVariable> getUserVariables() {
     return this.userVariables;
   }
 
-  public void setUserVariables(Set<UserVariable> userVariables) {
+  public void setUserVariables(ArrayList<UserVariable> userVariables) {
     this.userVariables = userVariables;
   }
 
@@ -81,6 +81,25 @@ public class UserMethod {
 
   public void setUserClass(UserClass userClass) {
     this.userClass = userClass;
+  }
+
+  @Override
+  public String toString(){
+    String s;
+    s = "    <method name=\"" + name +"\" "
+            +"return=\"" + returnType +"\" "
+            +"modifier=\"" + modifier +"\" "
+            +"parameter_type=\"" ;
+    
+    for(int i = 0; i < userVariables.size() ; i++){
+        if(i == userVariables.size() - 1){
+            s += userVariables.get(i);
+            break;
+        }
+        s += userVariables.get(i) +" ";
+    }
+    s += "\"/>\n";
+    return s;
   }
 
 }
