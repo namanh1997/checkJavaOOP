@@ -1,81 +1,95 @@
 package com.example.check_java_oop.service;
 
-import java.io.FileOutputStream;
 import java.lang.Class;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.check_java_oop.model.ExamFile;
 import com.example.check_java_oop.model.UserClass;
 import com.example.check_java_oop.model.UserMethod;
 import com.example.check_java_oop.model.UserVariable;
 
+@Service
 public final class ConvertToXMLService extends ClassLoader {
 
-  public String strXML;
-  public String strClassname;
-  public StringBuilder sb;
+	public String strXML;
+	public String strClassname;
+	public StringBuilder sb;
 
-  public ConvertToXMLService(String classname, Class<?> aclass) {
-      this.strClassname = classname;
-      convertToXML(aclass);
-      //System.out.println(sb.toString());
-      strXML = System.getProperty("user.dir") + "/src/xmlTest/" + strClassname + ".xml";
-      try (FileOutputStream fos = new FileOutputStream(strXML);) {
-          byte[] data = sb.toString().getBytes();
-          fos.write(data);
-      } catch (Exception e) {
-          System.err.println("error: " + e.getMessage());
-      }
-  }
+	@Autowired
+	private FileService fileService;
 
-  public void convertToXML(Class<?> aclass) {
-      sb = new StringBuilder();
-      sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
-      UserClass UserClass = new UserClass();
-      UserClass.setName(aclass.getSimpleName());
-      UserClass.setModifier(Modifier.toString(aclass.getModifiers()));
-      UserClass.setExtend(aclass.getSuperclass().getSimpleName());
+	@Autowired
+	private CompileToClassFile compileToClassFile;
 
-      Class<?>[] interfaces = aclass.getInterfaces();
-      ArrayList<String> list = new ArrayList<String>();
-      for (Class<?> i : interfaces) {
-          list.add(i.getSimpleName());
-      }
-      UserClass.implement = list;
-      sb.append(UserClass.toString());
+	public ConvertToXMLService() {
+		super();
+	}
 
-      Field[] fields = aclass.getDeclaredFields();
-      for (int i = 0; i < fields.length; i++) {
-          UserVariable UserVariable = new UserVariable();
-          UserVariable.setName(fields[i].getName());
-          UserVariable.setType(fields[i].getType().getSimpleName());
-          int m = fields[i].getModifiers();
-          UserVariable.setModifier(Modifier.toString(m));
-          sb.append(UserVariable.toString());
-      }
-      Method[] methods = aclass.getDeclaredMethods();
-      for (int i = 0; i < methods.length; i++) {
-          UserMethod UserMethod = new UserMethod();
-          UserMethod.setName(methods[i].getName());
-          UserMethod.setReturnType(methods[i].getReturnType().getSimpleName());
-          int m = methods[i].getModifiers();
-          UserMethod.setModifier(Modifier.toString(m));
-          Parameter[] parameters = methods[i].getParameters();
-          ArrayList<String> lp = new ArrayList<String>();
-          for (Parameter para : parameters) {
-              lp.add(para.getType().getSimpleName());
-          }
-          UserMethod.parameter_type = lp;
-          sb.append(UserMethod.toString());
-      }
-      sb.append("</class>");
-  }
+	public void convertToXML(ExamFile file) {
 
-  public String getXML() {
-      return strXML;
-  }
+		List<Class<?>> classes = compileToClassFile.compile(file);
+
+		if (classes == null) {
+			System.out.println("Dat ten class sai!!!!");
+		}
+		System.out.println("converting");
+
+		sb = new StringBuilder();
+		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n");
+		sb.append("<classes>\n");
+		for (int j = 0; j < classes.size(); j++) {
+			UserClass userClass = new UserClass();
+			userClass.setName(classes.get(j).getSimpleName());
+			userClass.setModifier(Modifier.toString(classes.get(j).getModifiers()));
+			if (classes.get(j).getSuperclass() != null) {
+				userClass.setExtend(classes.get(j).getSuperclass().getSimpleName());
+			}
+			Class<?>[] interfaces = classes.get(j).getInterfaces();
+			ArrayList<String> list = new ArrayList<String>();
+			for (Class<?> i : interfaces) {
+				list.add(i.getSimpleName());
+			}
+			userClass.setImplement(list);
+			sb.append(userClass.toString());
+
+			Field[] fields = classes.get(j).getDeclaredFields();
+			for (int i = 0; i < fields.length; i++) {
+				UserVariable userVariable = new UserVariable();
+				userVariable.setName(fields[i].getName());
+				userVariable.setType(fields[i].getType().getSimpleName());
+				int m = fields[i].getModifiers();
+				userVariable.setModifier(Modifier.toString(m));
+				sb.append(userVariable.toString());
+			}
+
+			Method[] methods = classes.get(j).getDeclaredMethods();
+			for (int i = 0; i < methods.length; i++) {
+				UserMethod userMethod = new UserMethod();
+				userMethod.setName(methods[i].getName());
+				userMethod.setReturnType(methods[i].getReturnType().getSimpleName());
+				int m = methods[i].getModifiers();
+				userMethod.setModifier(Modifier.toString(m));
+				Parameter[] parameters = methods[i].getParameters();
+				ArrayList<String> lp = new ArrayList<String>();
+				for (Parameter para : parameters) {
+					lp.add(para.getType().getSimpleName());
+				}
+				userMethod.setParameterType(lp);
+				sb.append(userMethod.toString());
+			}
+			sb.append("</class>");
+		}
+		sb.append("</classes>");
+
+		fileService.saveXMLFile(sb.toString().getBytes(), file);
+	}
 
 }

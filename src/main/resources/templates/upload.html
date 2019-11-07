@@ -1,27 +1,67 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org" class="h-100">
-<head>
-	<title>Upload</title>
-  <link rel="stylesheet" type="text/css" th:href="@{/css/custom.css}" />
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-</head>
-<body class="h-100">
-  <div th:insert="_header :: header">
-  </div>
+	xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout :: head"></head>
+
+<body>
+	<nav th:replace="layout :: header"></nav>
+
 	<div class="container upload">
-    <div class="row h-100 align-items-center justify-content-center text-center">
-      <!-- <div class="col-lg-10 align-self-end">
-        <h1 class="text-uppercase text-white font-weight-bold">
-          Your Favorite Source of Free Bootstrap Themes
-        </h1>
-      </div> -->
-      <div class="center">
-        <a class="btn btn-primary" href="#about">Gửi bài</a>
-      </div>
-    </div>
-  </div>
+		<div class="mx-auto col-md-5">
+			<h1>Tạo đề</h1>
+
+			<form class="center" method="POST" th:action="@{/upload}"
+				th:object=${exam} enctype="multipart/form-data">
+				<div class="form-group">
+					<label for="">Tên đề</label> <input th:field="*{name}" type="text"
+						name="name" class="form-control" placeholder="Tên đề" />
+				</div>
+				<div class="form-group">
+					<label for="">File đề thi</label>
+					<div class="custom-file">
+						<input th:field="*{examData}" type="file"
+							class="custom-file-input" name="file" id="examFile"> <label
+							class="custom-file-label" for="examFile">Ví dụ: de1.txt</label>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="">File đáp án đề thi</label>
+					<div class="custom-file">
+						<input th:field="*{answerData}" type="file"
+							class="custom-file-input" name="file" id="examAnswerFile">
+						<label class="custom-file-label" for="examAnswerFile">Ví
+							dụ: De1.java</label>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="">File input đề thi</label>
+					<div class="custom-file">
+						<input th:field="*{inputData}" type="file"
+							class="custom-file-input" name="file" id="inputFile"> <label
+							class="custom-file-label" for="inputFile">Ví dụ:
+							input.txt</label>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="">File output đề thi</label>
+					<div class="custom-file">
+						<input th:field="*{outputData}" type="file"
+							class="custom-file-input" name="file" id="outputFile"> <label
+							class="custom-file-label" for="outputFile">Ví dụ:
+							output.txt</label>
+					</div>
+				</div>
+				<button class="btn btn-primary" type="submit">Gửi</button>
+			</form>
+
+			<div th:if="${message}">
+				<h2 th:text="${message}"></h2>
+			</div>
+		</div>
+	</div>
+	<footer th:replace="layout :: footer"></footer>
+
+
 </body>
 </html>

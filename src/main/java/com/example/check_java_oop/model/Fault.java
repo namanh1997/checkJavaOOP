@@ -1,5 +1,7 @@
 package com.example.check_java_oop.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -16,8 +17,10 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "user_variable")
-public class UserVariable {
+@Table
+public class Fault implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
@@ -25,62 +28,42 @@ public class UserVariable {
 	@Column(nullable = false)
 	private int id;
 	@Column
-	@NotNull
-	private String name;
+	private int line;
 	@Column
-	@NotNull
-	private String type;
-	@Column
-	private String modifier;
+	private int column;
 	@ManyToOne
-	@JoinColumn(name = "user_class_id")
+	@JoinColumn(name = "user_id")
 	private UserClass userClass;
 
-	public UserVariable() {
+	public Fault() {
 	}
 
 	public int getId() {
 		return id;
 	}
 
-	public String getName() {
-		return this.name;
+	public int getLine() {
+		return line;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setLine(int line) {
+		this.line = line;
 	}
 
-	public String getType() {
-		return this.type;
+	public int getColumn() {
+		return column;
 	}
 
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getModifier() {
-		return this.modifier;
-	}
-
-	public void setModifier(String modifier) {
-		this.modifier = modifier;
+	public void setColumn(int column) {
+		this.column = column;
 	}
 
 	public UserClass getUserClass() {
-		return this.userClass;
+		return userClass;
 	}
 
 	public void setUserClass(UserClass userClass) {
 		this.userClass = userClass;
-	}
-
-	@Override
-	public String toString() {
-		String s;
-		s = "<variable name=\"" + name + "\" " + "type=\"" + type + "\" " + "modifier=\""
-				+ modifier + "\"/>\n";
-		return s;
 	}
 
 }

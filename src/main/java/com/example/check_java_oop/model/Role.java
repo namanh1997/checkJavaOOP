@@ -1,6 +1,7 @@
 package com.example.check_java_oop.model;
 
-import java.util.Collection;
+import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,42 +11,50 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import lombok.Data;
 
 @Data
 @Entity
 @Table(name = "role")
-public class Role {
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column
-  private int id;
-  @Column
-  private String name;
-  @ManyToMany(mappedBy = "roles")
-  private Collection<User> users;
+public class Role implements Serializable {
 
-  public Role() {
-  }
+	private static final long serialVersionUID = 1L;
 
-  public Role(String name) {
-    this.name = name;
-  }
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+	@GenericGenerator(name = "native", strategy = "native")
+	@Column(nullable = false)
+	private int id;
+	@Column
+	private String name;
+	@ManyToMany(mappedBy = "roles")
+	private List<User> users;
 
-  public String getName() {
-    return this.name;
-  }
+	public Role() {
+	}
+	public int getId() {
+		return id;
+	}
+	public Role(String name) {
+		this.name = name;
+	}
 
-  public void setName(String name) {
-    this.name = name;
-  }
+	public String getName() {
+		return this.name;
+	}
 
-  public Collection<User> getUsers() {
-    return this.users;
-  }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-  public void setUsers(Collection<User> users) {
-    this.users = users;
-  }
+	public List<User> getUsers() {
+		return this.users;
+	}
+
+	public void setUsers(List<User> users) {
+		this.users = users;
+	}
 
 }
