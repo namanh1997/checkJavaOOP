@@ -1,76 +1,32 @@
 package com.example.check_java_oop.controller;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-
-import com.example.check_java_oop.exception.StorageFileNotFoundException;
 import com.example.check_java_oop.model.Exam;
-import com.example.check_java_oop.model.ExamExecution;
-import com.example.check_java_oop.model.StorageProperties;
-import com.example.check_java_oop.model.User;
-import com.example.check_java_oop.model.UserClass;
-import com.example.check_java_oop.model.UserPrincipal;
-import com.example.check_java_oop.service.CheckSourceCode;
-import com.example.check_java_oop.service.ConvertToXMLService;
-import com.example.check_java_oop.service.ExamExecutionService;
+import com.example.check_java_oop.model.ExamExercise;
 import com.example.check_java_oop.service.ExamService;
 import com.example.check_java_oop.service.FileService;
-import com.example.check_java_oop.service.StorageService;
-import com.example.check_java_oop.service.UserService;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class ExamController {
-
 	@Autowired
 	private FileService fileService;
-
-	@Autowired
-	private UserService userService;
-
 	@Autowired
 	private ExamService examService;
-
-	@Autowired
-	private ConvertToXMLService convertToXMLService;
-
-	@Autowired
-	private final StorageService storageService;
-
-	@Autowired
-	public ExamController(StorageService storageService) {
-		this.storageService = storageService;
-	}
 
 	@GetMapping("/upload")
 	public String listUploadedFiles(Model model) {
@@ -83,26 +39,33 @@ public class ExamController {
 	public String handleFileUpload(RedirectAttributes redirectAttributes,
 			@ModelAttribute("exam") Exam exam, Model model) {
 		examService.save(exam);
-		return "redirect:/upload";
+		return "redirect:/examList";
+	}
+
+	@PostMapping("/exam/update")
+	public String updateExam(RedirectAttributes redirectAttributes,
+			@ModelAttribute("exam") Exam exam, Model model) {
+		examService.save(exam);
+		return "redirect:/examList";
 	}
 
 	@GetMapping("/exam/show/{id}")
 	public String show(@PathVariable("id") Integer id, Model model) {
 		Exam exam = examService.findOne(id);
 
-		ExamExecution examExecution = new ExamExecution();
-		UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext()
-				.getAuthentication().getPrincipal();
-		examExecution.setUser(userPrincipal.getUser());
-		examExecution.setExam(exam);
+		ExamExercise examExercise = new ExamExercise();
 
-		model.addAttribute("examExecution", examExecution);
+		model.addAttribute("examExercise", examExercise);
 		model.addAttribute("exam", exam);
 		model.addAttribute("examFile", fileService.readFileToString(exam.getExamLocation()));
 		model.addAttribute("inputFile",
 				fileService.readFileToString(exam.getInputLocation()));
 		model.addAttribute("outputFile",
 				fileService.readFileToString(exam.getOutputLocation()));
+		model.addAttribute("exampleInputFile",
+				fileService.readFileToString(exam.getExampleInputLocation()));
+		model.addAttribute("exampleOutputFile",
+				fileService.readFileToString(exam.getExampleOutputLocation()));
 		return "show";
 	}
 
@@ -112,7 +75,7 @@ public class ExamController {
 		return "examList";
 	}
 
-	@GetMapping("/examList/search")
+	@GetMapping("/exam/search")
 	public String search(@RequestParam("term") String term, Model model) {
 		if (StringUtils.isEmpty(term)) {
 			return "redirect:/examList";
@@ -122,8 +85,21 @@ public class ExamController {
 		return "examList";
 	}
 
-	@ExceptionHandler(StorageFileNotFoundException.class)
-	public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
-		return ResponseEntity.notFound().build();
+	@GetMapping("/exam/edit/{id}")
+	public String edit(@PathVariable("id") Integer id, Model model) {
+		model.addAttribute("exam", examService.findOne(id));
+		return "examEdit";
 	}
+
+	@GetMapping("/exam/delete/{id}")
+	public String delete(@PathVariable int id, RedirectAttributes redirect) {
+		examService.delete(id);
+		redirect.addFlashAttribute("successMessage", "Xóa đề thành công!");
+		return "redirect:/examList";
+	}
+
+//	@ExceptionHandler(StorageFileNotFoundException.class)
+//	public ResponseEntity<?> handleStorageFileNotFound(StorageFileNotFoundException exc) {
+//		return ResponseEntity.notFound().build();
+//	}
 }

@@ -18,11 +18,11 @@
 					</button>
 				</div>
 
-				<h2>Danh sách đề bài</h2>
+				<h2>Danh sách tài khoản</h2>
 
 				<div class="row tools">
 					<div class="col-6 ">
-						<form class="form-inline" action="#" th:action="@{/exam/search}"
+						<form class="form-inline" action="#" th:action="@{/user/search}"
 							method="get">
 							<input class="form-control mr-sm-2" type="search" name="term"
 								placeholder="Tìm theo tên ..." />
@@ -33,37 +33,36 @@
 					</div>
 
 					<div class="col-6" sec:authorize="hasRole('ADMIN')">
-						<a href="#" th:href="@{/upload}"
+						<a href="#" th:href="@{/registration}"
 							class="btn btn-success float-right"> <i
-							class="fa fa-plus-square"></i> Tạo đề
+							class="fa fa-plus-square"></i> Tạo tài khoản
 						</a>
 					</div>
 				</div>
 
-				<th:block th:if="${#lists.isEmpty(exams)}">
-					<h5>Không có đề bài nào</h5>
+				<th:block th:if="${#lists.isEmpty(users)}">
+					<h5>Không có tài khoản nào</h5>
 				</th:block>
 
-				<th:block th:unless="${#lists.isEmpty(exams)}">
+				<th:block th:unless="${#lists.isEmpty(users)}">
 					<div class="table-responsive">
 						<table class="table table-bordered table-hover">
 							<thead>
 								<tr>
 									<th style="width: 10%">#</th>
-									<th style="width: 65%">Tên bài</th>
+									<th>Tên tài khoản</th>
 									<th style="width: 15%" sec:authorize="hasRole('ADMIN')"
 										class="text-center">Hành động</th>
 								</tr>
 							</thead>
 							<tbody>
-								<tr th:each="exam,iterStat : ${exams}">
+								<tr th:each="user,iterStat : ${users}">
 									<th scope="row" th:text="${iterStat.count}"></th>
-									<td><a th:text="${exam.name}"
-										th:href="@{/exam/show/{id}(id=${exam.id})}"></a></td>
+									<td th:text="${user.username}"></td>
 									<td class="text-center" sec:authorize="hasRole('ADMIN')"><a
-										href="#" th:href="@{/exam/edit/{id}(id=${exam.id})}"
+										href="#" th:href="@{/user/edit/{id}(id=${user.id})}"
 										class="mr-sm-3 text-primary"> <i class="fa fa-pencil"></i>
-									</a> <a href="#" th:href="@{/exam/delete/{id}(id=${exam.id})}"
+									</a> <a href="#" th:href="@{/user/delete/{id}(id=${user.id})}"
 										class="text-danger"> <i class="fa fa-trash"></i>
 									</a></td>
 								</tr>

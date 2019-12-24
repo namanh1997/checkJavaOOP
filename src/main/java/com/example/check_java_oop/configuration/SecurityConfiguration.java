@@ -24,41 +24,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
   @Autowired
   private UserDetailsService userDetailsService;
 
-  // @Autowired
-  // private BCryptPasswordEncoder bCryptPasswordEncoder;
-
   @Bean
   public PasswordEncoder passwordEncoder() {
       return new BCryptPasswordEncoder();
   }
 
   @Autowired
-  private DataSource dataSource;
-
-  @Autowired
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
       auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
   }
-  
-  // @Override
-  // protected void configure(AuthenticationManagerBuilder auth)
-  //         throws Exception {
-  //   auth
-  //       .jdbcAuthentication()
-  //       .usersByUsernameQuery(
-  //         "select username,password,enabled from checkjavaoop.users where username = ?"
-  //       )
-  //       .authoritiesByUsernameQuery(
-  //         "select user_id, role_id from checkjavaoop.user_roles where user_id=?"
-  //       )
-  //       .dataSource(dataSource)
-  //       .passwordEncoder(bCryptPasswordEncoder)
-  //       .withUser("user").password(bCryptPasswordEncoder.encode("123456"))
-  //         .roles("USER")
-  //       .and()
-  //       .withUser("admin").password(bCryptPasswordEncoder.encode("123456"))
-  //         .roles("ADMIN");
-  // }
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
@@ -73,12 +47,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
       .antMatchers("/upload").hasRole("ADMIN")
       .antMatchers("/uploadExercise").hasRole("USER")
       .antMatchers("/admin/**").hasRole("ADMIN")
+      .antMatchers("/exam/edit/**").hasRole("ADMIN")
+      .antMatchers("/exam/delete/**").hasRole("ADMIN")
       .anyRequest()
         .authenticated()
       .and()
       .formLogin()
         .loginPage("/login")
-        .defaultSuccessUrl("/upload")
+        .defaultSuccessUrl("/examList")
         .usernameParameter("username")
         .passwordParameter("password")
         .permitAll()

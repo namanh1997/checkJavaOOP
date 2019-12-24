@@ -25,7 +25,6 @@
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script th:src="@{/js/custom.js}"></script>
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
 	integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
 	crossorigin="anonymous"></script>
@@ -42,44 +41,56 @@
 </head>
 
 <body>
-	<nav th:fragment="header"
-		class="navbar navbar-expand-lg navbar-dark bg-dark">
-		<div class="container">
-			<a class="navbar-brand" href="#">My project</a>
-			<button class="navbar-toggler" type="button" data-toggle="collapse"
-				data-target="#navbarSupportedContent"
-				aria-controls="navbarSupportedContent" aria-expanded="false"
-				aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
+	<header th:fragment="header">
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<div class="container">
+				<a class="navbar-brand" href="#">My project</a>
+				<button class="navbar-toggler" type="button" data-toggle="collapse"
+					data-target="#navbarSupportedContent"
+					aria-controls="navbarSupportedContent" aria-expanded="false"
+					aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
 
-			<div class="collapse navbar-collapse" id="navbarSupportedContent">
-				<ul class="navbar-nav mr-auto	">
-					<li th:classappend="${module == 'home' ? 'active' : ''}"
-						class="nav-item"><a href="/upload" th:href="@{/upload}"
-						class="nav-link">Tạo đề</a></li>
-					<li th:classappend="${module == 'home' ? 'active' : ''}"
-						class="nav-item"><a href="/examList" th:href="@{/examList}"
-						class="nav-link">Đề bài</a></li>
-				</ul>
-				<ul class="navbar-nav justify-content-end">
-					<li class="nav-item"><a class="nav-link">
-							<div sec:authorize="isAuthenticated()">
-								Chào <span sec:authentication="name"></span>
-							</div>
-					</a></li>
-					<li th:if="${#authorization.expression('isAuthenticated()')}"
-						class="nav-item"><a class="nav-link" href="/logout"
-						th:href="@{#}" onclick="$('#form').submit();">Đăng xuất </a>
-						<form style="visibility: hidden" id="form" method="post"
-							action="#" th:action="@{/logout}"></form></li>
-				</ul>
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<ul class="navbar-nav mr-auto	">
+						<li class="nav-item dropdown" sec:authorize="isAuthenticated()"><a
+							class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
+							role="button" data-toggle="dropdown" aria-haspopup="true"
+							aria-expanded="false"> Đề bài </a>
+							<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+								<a sec:authorize="hasRole('ADMIN')"
+									class="dropdown-item" th:href="@{/upload}">Tạo đề</a> <a
+									class="dropdown-item" th:href="@{/examList}">Danh sách đề</a>
+							</div></li>
+						<li class="nav-item dropdown" sec:authorize="isAuthenticated()"><a
+							class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
+							role="button" data-toggle="dropdown" aria-haspopup="true"
+							aria-expanded="false" sec:authorize="hasRole('ADMIN')"> Người dùng </a>
+							<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+								<a th:if="${#authorization.expression('isAuthenticated()')}"
+									class="dropdown-item" th:href="@{/registration}">Tạo người dùng</a> <a
+									class="dropdown-item" th:href="@{/userList}">Danh sách người dùng</a>
+							</div></li>
+					</ul>
+					<ul class="navbar-nav justify-content-end">
+						<li class="nav-item"><a class="nav-link">
+								<div sec:authorize="isAuthenticated()">
+									Chào <span sec:authentication="name"></span>
+								</div>
+						</a></li>
+						<li th:if="${#authorization.expression('isAuthenticated()')}"
+							class="nav-item"><a class="nav-link" href="/logout"
+							th:href="@{#}" onclick="$('#form').submit();">Đăng xuất </a>
+							<form style="visibility: hidden" id="form" method="post"
+								action="#" th:action="@{/logout}"></form></li>
+					</ul>
+				</div>
 			</div>
-		</div>
-	</nav>
+		</nav>
+	</header>
 
-
-	<footer th:fragment="footer">
+	<footer class="footer" th:fragment="footer">
 		<script th:src="@{/js/custom.js}"></script>
 	</footer>
 </body>

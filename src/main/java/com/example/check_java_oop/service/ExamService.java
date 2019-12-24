@@ -42,6 +42,7 @@ public class ExamService {
 		exam.setFileName(exam.getExamData().getOriginalFilename().split("\\.")[0]);
 		exam.setDirectory(Paths.get(exam.getDirectory()).toAbsolutePath() + File.separator
 				+ exam.getFileName());
+
 		Path dir = Paths.get(exam.getDirectory());
 		if (!dir.toFile().exists()) {
 			dir.toFile().mkdirs();
@@ -51,10 +52,15 @@ public class ExamService {
 		exam.setAnswerLocation(fileService.saveFile(exam.getAnswerData(), exam));
 		exam.setInputLocation(fileService.saveFile(exam.getInputData(), exam));
 		exam.setOutputLocation(fileService.saveFile(exam.getOutputData(), exam));
+		exam.setExampleInputLocation(fileService.saveFile(exam.getExampleInputData(), exam));
+		exam.setExampleOutputLocation(
+				fileService.saveFile(exam.getExampleOutputData(), exam));
 
 		convertToXMLService.convertToXML(exam);
+
 		exam.setAnswerXMLLocation(Paths.get(exam.getDirectory()).toAbsolutePath()
 				+ File.separator + exam.getFileName() + ".xml");
+
 		examRepository.save(exam);
 	}
 

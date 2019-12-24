@@ -16,7 +16,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.example.check_java_oop.model.Exam;
-import com.example.check_java_oop.model.ExamExecution;
+import com.example.check_java_oop.model.ExamExercise;
 import com.example.check_java_oop.model.UserClass;
 import com.example.check_java_oop.model.UserMethod;
 import com.example.check_java_oop.model.UserVariable;
@@ -24,16 +24,6 @@ import com.example.check_java_oop.model.UserVariable;
 @Service
 public class CompareXMLService {
 
-	@Autowired
-	private ConvertToXMLService convertToXMLService;
-
-	ArrayList<UserClass> alClassesD = new ArrayList<>();
-	ArrayList<UserVariable> alVariablesD = new ArrayList<>();
-	ArrayList<UserMethod> alMethodsD = new ArrayList<>();
-
-	ArrayList<UserClass> alClassesT = new ArrayList<>();
-	ArrayList<UserVariable> alVariablesT = new ArrayList<>();
-	ArrayList<UserMethod> alMethodsT = new ArrayList<>();
 	int classErr = 0;
 	int varErr = 0;
 	int methodErr = 0;
@@ -43,14 +33,12 @@ public class CompareXMLService {
 		super();
 	}
 
-	public void compare(Exam exam, ExamExecution examExecution) {
+	public void compare(Exam exam, ExamExercise examExecution) {
 
-		convertToXMLService.convertToXML(examExecution);
-
-		this.XmlExercise = examExecution.getExamExecutionXMLLocation();
+		this.XmlExercise = examExecution.getExamExerciseXMLLocation();
 		this.XmlTest = exam.getAnswerXMLLocation();
-		inExercise();
-		inTest();
+		List<UserClass> alClassesD = unmarshallXML(this.XmlExercise);
+		List<UserClass> alClassesT = unmarshallXML(this.XmlTest);
 		boolean classNotFound = true;
 		boolean varNotFound = true;
 		boolean methodNotFound = true;
@@ -120,11 +108,14 @@ public class CompareXMLService {
 		return false;
 	}
 
-	public void inExercise() {
+	public List<UserClass> unmarshallXML(String xml) {
+		List<UserClass> classes = new ArrayList<>();
+		List<UserVariable> variables = new ArrayList<>();
+		List<UserMethod> methods = new ArrayList<>();
 		try {
 			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse(new File(XmlExercise));
+			Document doc = docBuilder.parse(new File(xml));
 
 			doc.getDocumentElement().normalize();
 			NodeList nlClasses = doc.getElementsByTagName("class");
@@ -154,11 +145,11 @@ public class CompareXMLService {
 							var.setName(varElement.getAttribute("name"));
 							var.setType(varElement.getAttribute("type"));
 							var.setModifier(varElement.getAttribute("modifier"));
-							alVariablesD.add(var);
+							variables.add(var);
 						}
 					}
 
-					cl.setUserVariables(alVariablesD);
+					cl.setUserVariables(variables);
 
 					NodeList nlMethods = classElement.getElementsByTagName("method");
 
@@ -174,141 +165,49 @@ public class CompareXMLService {
 							method.setModifier(methodElement.getAttribute("modifier"));
 							method.setParameterType(
 									Arrays.asList(methodElement.getAttribute("parameter_type").split(" ")));
-							alMethodsD.add(method);
+							methods.add(method);
 						}
 					}
 
-					cl.setUserMethods(alMethodsD);
-					alClassesD.add(cl);
+					cl.setUserMethods(methods);
+					classes.add(cl);
+					methods.clear();
+					variables.clear();
 				}
 			}
 
-			for (int i = 0; i < alClassesD.size(); i++) {
-				UserClass tempCl = alClassesD.get(i);
-
-				System.out.println("Class name: " + tempCl.getName());
-				System.out.println("Class modifier: " + tempCl.getModifier());
-				System.out.println("Class extends: " + tempCl.getExtend());
-				System.out.println("Class implements: " + tempCl.getImplement());
-				System.out.println();
-
-				List<UserVariable> tempVL = tempCl.getUserVariables();
-				for (int j = 0; j < tempVL.size(); j++) {
-					System.out.println("UserVariable name: " + tempVL.get(j).getName());
-					System.out.println("UserVariable type: " + tempVL.get(j).getType());
-					System.out.println("UserVariable modifier: " + tempVL.get(j).getModifier());
-					System.out.println();
-				}
-
-				List<UserMethod> tempML = tempCl.getUserMethods();
-				for (int k = 0; k < tempML.size(); k++) {
-					System.out.println("UserMethod name: " + tempML.get(k).getName());
-					System.out.println("UserMethod return: " + tempML.get(k).getReturnType());
-					System.out.println("UserMethod modifier: " + tempML.get(k).getModifier());
-					System.out
-							.println("UserMethod parameter type: " + tempML.get(k).getParameterType());
-					System.out.println();
-				}
-			}
+//			for (int i = 0; i < classes.size(); i++) {
+//				UserClass tempCl = classes.get(i);
+//
+//				System.out.println("Class name: " + tempCl.getName());
+//				System.out.println("Class modifier: " + tempCl.getModifier());
+//				System.out.println("Class extends: " + tempCl.getExtend());
+//				System.out.println("Class implements: " + tempCl.getImplement());
+//				System.out.println();
+//
+//				List<UserVariable> tempVL = tempCl.getUserVariables();
+//				for (int j = 0; j < tempVL.size(); j++) {
+//					System.out.println("UserVariable name: " + tempVL.get(j).getName());
+//					System.out.println("UserVariable type: " + tempVL.get(j).getType());
+//					System.out.println("UserVariable modifier: " + tempVL.get(j).getModifier());
+//					System.out.println();
+//				}
+//
+//				List<UserMethod> tempML = tempCl.getUserMethods();
+//				for (int k = 0; k < tempML.size(); k++) {
+//					System.out.println("UserMethod name: " + tempML.get(k).getName());
+//					System.out.println("UserMethod return: " + tempML.get(k).getReturnType());
+//					System.out.println("UserMethod modifier: " + tempML.get(k).getModifier());
+//					System.out
+//							.println("UserMethod parameter type: " + tempML.get(k).getParameterType());
+//					System.out.println();
+//				}
+//			}
 
 		} catch (Exception ex) {
 			System.out.println(ex);
 		}
+		return classes;
 	}
 
-	public void inTest() {
-		try {
-			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse(new File(XmlTest));
-
-			doc.getDocumentElement().normalize();
-			NodeList nlClasses = doc.getElementsByTagName("class");
-
-			for (int i = 0; i < nlClasses.getLength(); i++) {
-				Node classNode = nlClasses.item(i);
-
-				if (classNode.getNodeType() == Node.ELEMENT_NODE) {
-					Element classElement = (Element) classNode;
-					UserClass cl = new UserClass();
-
-					cl.setName(classElement.getAttribute("name"));
-					cl.setModifier(classElement.getAttribute("modifier"));
-					cl.setExtend(classElement.getAttribute("extends"));
-					cl.setImplement(new ArrayList<String>(
-							Arrays.asList(classElement.getAttribute("implements"))));
-
-					NodeList nlVariables = classElement.getElementsByTagName("variable");
-
-					for (int j = 0; j < nlVariables.getLength(); j++) {
-						Node varNode = nlVariables.item(j);
-
-						if (varNode.getNodeType() == Node.ELEMENT_NODE) {
-							Element varElement = (Element) varNode;
-							UserVariable var = new UserVariable();
-
-							var.setName(varElement.getAttribute("name"));
-							var.setType(varElement.getAttribute("type"));
-							var.setModifier(varElement.getAttribute("modifier"));
-							alVariablesT.add(var);
-						}
-					}
-
-					cl.setUserVariables(alVariablesT);
-
-					NodeList nlMethods = classElement.getElementsByTagName("method");
-
-					for (int k = 0; k < nlMethods.getLength(); k++) {
-						Node methodNode = nlMethods.item(k);
-
-						if (methodNode.getNodeType() == Node.ELEMENT_NODE) {
-							Element methodElement = (Element) methodNode;
-							UserMethod method = new UserMethod();
-
-							method.setName(methodElement.getAttribute("name"));
-							method.setReturnType(methodElement.getAttribute("return"));
-							method.setModifier(methodElement.getAttribute("modifier"));
-							method.setParameterType(
-									Arrays.asList(methodElement.getAttribute("parameter_type").split(" ")));
-							alMethodsT.add(method);
-						}
-					}
-
-					cl.setUserMethods(alMethodsT);
-					alClassesT.add(cl);
-				}
-			}
-
-			for (int i = 0; i < alClassesT.size(); i++) {
-				UserClass tempCl = alClassesT.get(i);
-
-				System.out.println("Class name: " + tempCl.getName());
-				System.out.println("Class modifier: " + tempCl.getModifier());
-				System.out.println("Class extends: " + tempCl.getExtend());
-				System.out.println("Class implements: " + tempCl.getImplement());
-				System.out.println();
-
-				List<UserVariable> tempVL = tempCl.getUserVariables();
-				for (int j = 0; j < tempVL.size(); j++) {
-					System.out.println("UserVariable name: " + tempVL.get(j).getName());
-					System.out.println("UserVariable type: " + tempVL.get(j).getType());
-					System.out.println("UserVariable modifier: " + tempVL.get(j).getModifier());
-					System.out.println();
-				}
-
-				List<UserMethod> tempML = tempCl.getUserMethods();
-				for (int k = 0; k < tempML.size(); k++) {
-					System.out.println("UserMethod name: " + tempML.get(k).getName());
-					System.out.println("UserMethod return: " + tempML.get(k).getReturnType());
-					System.out.println("UserMethod modifier: " + tempML.get(k).getModifier());
-					System.out
-							.println("UserMethod parameter type: " + tempML.get(k).getParameterType());
-					System.out.println();
-				}
-			}
-
-		} catch (Exception ex) {
-			System.out.println(ex);
-		}
-	}
 }

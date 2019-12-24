@@ -25,7 +25,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.check_java_oop.model.Exam;
-import com.example.check_java_oop.model.ExamExecution;
+import com.example.check_java_oop.model.ExamExercise;
 import com.example.check_java_oop.model.ExamFile;
 
 @Service
@@ -57,7 +57,7 @@ public class FileService {
 	}
 
 	public String saveXMLFile(byte[] byteArray, ExamFile file) {
-		String filename = file.getName();
+		String filename = file.getFileName();
 		String location = Paths.get(file.getDirectory()).toAbsolutePath() + File.separator
 				+ filename + ".xml";
 		saveFileToDisk(byteArray, location, filename);

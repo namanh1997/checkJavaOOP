@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
@@ -25,15 +26,11 @@ import lombok.Data;
 @Data
 @Entity
 @Table
+@PrimaryKeyJoinColumn(name = "examFileId")
 public class Exam extends ExamFile implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-	@GenericGenerator(name = "native", strategy = "native")
-	@Column(nullable = false)
-	private int id;
 	@Transient
 	private MultipartFile examData;
 	@Transient
@@ -42,6 +39,10 @@ public class Exam extends ExamFile implements Serializable {
 	private MultipartFile inputData;
 	@Transient
 	private MultipartFile outputData;
+	@Transient
+	private MultipartFile exampleInputData;
+	@Transient
+	private MultipartFile exampleOutputData;
 	@Column
 	private String examLocation;
 	@Column
@@ -52,14 +53,18 @@ public class Exam extends ExamFile implements Serializable {
 	private String inputLocation;
 	@Column
 	private String outputLocation;
+	@Column
+	private String exampleInputLocation;
+	@Column
+	private String exampleOutputLocation;
 	@OneToMany(mappedBy = "exam", cascade = CascadeType.ALL)
-	private List<ExamExecution> examExecutions;
+	private List<ExamExercise> examExecutions;
 
-	public List<ExamExecution> getExamExecutions() {
+	public List<ExamExercise> getExamExecutions() {
 		return examExecutions;
 	}
 
-	public void setExamExecutions(List<ExamExecution> examExecutions) {
+	public void setExamExecutions(List<ExamExercise> examExecutions) {
 		this.examExecutions = examExecutions;
 	}
 
@@ -67,8 +72,36 @@ public class Exam extends ExamFile implements Serializable {
 		super();
 	}
 
-	public int getId() {
-		return id;
+	public String getExampleInputLocation() {
+		return exampleInputLocation;
+	}
+
+	public void setExampleInputLocation(String exampleInputLocation) {
+		this.exampleInputLocation = exampleInputLocation;
+	}
+
+	public String getExampleOutputLocation() {
+		return exampleOutputLocation;
+	}
+
+	public void setExampleOutputLocation(String exampleOutputLocation) {
+		this.exampleOutputLocation = exampleOutputLocation;
+	}
+
+	public MultipartFile getExampleInputData() {
+		return exampleInputData;
+	}
+
+	public void setExampleInputData(MultipartFile exampleInputData) {
+		this.exampleInputData = exampleInputData;
+	}
+
+	public MultipartFile getExampleOutputData() {
+		return exampleOutputData;
+	}
+
+	public void setExampleOutputData(MultipartFile exampleOutputData) {
+		this.exampleOutputData = exampleOutputData;
 	}
 
 	public MultipartFile getExamData() {

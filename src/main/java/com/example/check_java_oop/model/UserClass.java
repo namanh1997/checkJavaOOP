@@ -44,14 +44,21 @@ public class UserClass implements Serializable {
 	private List<UserVariable> userVariables;
 	@OneToMany(mappedBy = "userClass", cascade = CascadeType.ALL)
 	private List<UserMethod> userMethods;
-	@OneToMany(mappedBy = "userClass", cascade = CascadeType.ALL)
-	private List<Fault> faults;
+	@ManyToOne
+	@JoinColumn(name = "exam_file_id", nullable = false)
+	private ExamFile examFile;
 
 	public UserClass() {
 	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public int getId() {
 		return id;
 	}
+
 	public String getName() {
 		return this.name;
 	}
@@ -103,8 +110,8 @@ public class UserClass implements Serializable {
 	@Override
 	public String toString() {
 		String s;
-		s = "<class name=\"" + name + "\" " + "modifier=\"" + modifier + "\" " + "extends=\"" + extend + "\" "
-				+ "implements=\"";
+		s = "<class name=\"" + name + "\" " + "modifier=\"" + modifier + "\" " + "extends=\""
+				+ extend + "\" " + "implements=\"";
 
 		for (int i = 0; i < implement.size(); i++) {
 			if (i == implement.size() - 1) {

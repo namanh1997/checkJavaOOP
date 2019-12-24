@@ -17,44 +17,43 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.check_java_oop.model.Exam;
-import com.example.check_java_oop.model.ExamExecution;
+import com.example.check_java_oop.model.ExamExercise;
 import com.example.check_java_oop.model.MyClassLoader;
 import com.example.check_java_oop.model.ExamFile;
+import com.example.check_java_oop.model.ExerciseResult;
 
 @Service
 public class CheckSourceCode {
 
 	@Autowired
-	private ConvertToXMLService convertToXMLService;
-	
-	@Autowired
 	private CompareXMLService compareXMLService;
-	
+
 	@Autowired
 	private CheckOutput checkOutput;
 
-	public void checkSource(Exam exam, ExamExecution examExecution) {
+	public void checkSource(Exam exam, ExamExercise examExecution) {
 
-		String className = examExecution.getName();
-
-		convertToXMLService.convertToXML(examExecution);
+		examExecution.setExerciseResult(new ExerciseResult());
 
 		compareXMLService.compare(exam, examExecution);
 		String resultDesign;
 		if (compareXMLService.check() == true) {
-			resultDesign = "Design is true\n";
+			resultDesign = "Đúng";
 		} else {
-			resultDesign = "Design is false\n";
+			resultDesign = "Sai";
 		}
 		String resultOutput;
 
 		if (checkOutput.check(exam, examExecution)) {
-			resultOutput = "Output is true\n";
+			examExecution.getExerciseResult().setOutputResult("Đúng");
+			resultOutput = "Output đúng\n";
 		} else {
-			resultOutput = "Output is false\n";
+			examExecution.getExerciseResult().setOutputResult("Sai");
+			resultOutput = "Output sai\n";
 		}
-		String response = resultDesign + "    " + resultOutput;
+		String response = resultDesign + resultOutput;
 		System.out.println(response);
+		examExecution.getExerciseResult().setResult(resultDesign);
 	}
 
 }

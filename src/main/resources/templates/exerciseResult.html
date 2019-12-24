@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="layout :: head"></head>
+
+<body>
+	<header th:replace="layout :: header"></header>
+
+	<div class="container main" th:object="${exerciseResult}">
+		<div class="content">
+			<h2>Kết quả bài làm</h2>
+			<span><b>Cấu trúc bài làm:</b></span> <span th:text="*{result}"></span>
+			<br> <br> <span><b>Output bài làm: </b></span> <span
+				th:text="*{outputResult}"></span>
+			<hr>
+			<h6>
+				<b>Output</b>
+			</h6>
+			<div class="code"
+				th:utext="${#strings.replace( #strings.escapeXml( exerciseResultOutput ),'&#10;','&lt;br /&gt;')}"></div>
+		</div>
+	</div>
+	<!-- /.container -->
+
+	<footer th:replace="layout :: footer"></footer>
+
+</body>
+</html>

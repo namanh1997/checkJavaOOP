@@ -13,56 +13,48 @@ import java.util.logging.Logger;
 import org.springframework.stereotype.Service;
 
 import com.example.check_java_oop.model.Exam;
-import com.example.check_java_oop.model.ExamExecution;
+import com.example.check_java_oop.model.ExamExercise;
 
 @Service
 public class CheckOutput {
 
-	String className;
-	String strCMD;
-
-	public CheckOutput() {
-	}
-
-	public CheckOutput(String className) {
-		this.className = className;
-	}
-
-	public boolean check(Exam exam, ExamExecution examExecution) {
+	public boolean check(Exam exam, ExamExercise examExecution) {
 
 		String fileDir = examExecution.getDirectory();
 		String fileName = examExecution.getFileName();
 		String fileAbsolutePath = Paths.get(fileDir).toAbsolutePath() + File.separator;
+		int error = 0;
 
-		strCMD = "java " + fileAbsolutePath + fileName + " <" + exam.getInputLocation();
+		String strCMD = "java -classpath " + fileDir + " " + fileName + " < "
+				+ exam.getExampleInputLocation();
 
 		try {
 			ProcessBuilder builder = new ProcessBuilder("cmd.exe", "/c", strCMD);
 			builder.directory(new File(examExecution.getDirectory()));
 			Process p = builder.start();
 			BufferedReader r1 = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			BufferedReader r2 = new BufferedReader(new FileReader(exam.getOutputLocation()));
-			String line1, line2;
-			while (true) {
-				line1 = r1.readLine();
+			BufferedReader r2 = new BufferedReader(
+					new FileReader(exam.getExampleOutputLocation()));
+			String line1, line2, outputExercise = "";
+
+			int i;
+			while ((i = r1.read()) != -1) {
+				line1 = String.valueOf((char)i);
+				line1 += r1.readLine();
+				outputExercise += line1 + "\n";
 				line2 = r2.readLine();
-				if (line1 != null || line2 != null) {
-					if (line2 == null ? line1 == null : line2.equals(line1)) {
-						System.out.println("Đáp án gửi: " + line1 + " Đáp án đúng: " + line2);
-					} else {
-						System.out.println("Đáp án gửi: " + line1 + " Đáp án đúng: " + line2);
-						r2.close();
-						return false;
-					}
-				} else {
-					break;
+				if (line1 == null || !line2.equals(line1)) {
+					error++;
 				}
 			}
+			examExecution.getExerciseResult().setOutput(outputExercise);
+			r1.close();
 			r2.close();
-			return true;
+
 		} catch (IOException ex) {
+			error++;
 			Logger.getLogger(CheckOutput.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		return true;
+		return error == 0 ? true : false;
 	}
 }

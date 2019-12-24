@@ -33,6 +33,7 @@ public class CompileToClassFile {
 			builder.start();
 
 			MyClassLoader myClassLoader = new MyClassLoader();
+			Thread.sleep(2 * 1000);
 			List<String> list = fileService.listClassFileAbsolutePathInDir(file.getDirectory());
 			for (int i = 0; i < list.size(); i++) {
 				byte[] data = fileService.readFileToByteArray(list.get(i));

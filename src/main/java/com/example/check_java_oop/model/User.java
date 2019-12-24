@@ -20,6 +20,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -35,8 +36,6 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "user")
-@EntityListeners(AuditingEntityListener.class)
-@JsonIgnoreProperties(value = { "createdAt", "updatedAt" }, allowGetters = true)
 public class User implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -44,35 +43,42 @@ public class User implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
 	@GenericGenerator(name = "native", strategy = "native")
-	@Column(nullable = false)
 	private int id;
-	@Column(unique = true)
-	@NotEmpty(message = "*Please provide an username")
 	private String username;
-	@Column
-	@Length(min = 6, message = "*Your password must have at least 6 characters")
-	@NotEmpty(message = "*Please provide your password")
 	private String password;
-	@Column
+	@Transient
+	private String passwordConfirm;
 	private boolean enabled;
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private List<Role> roles;
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private List<ExamExecution> examExecutions;
+	private List<ExamExercise> examExecutions;
 
 	public User() {
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public int getId() {
 		return id;
 	}
 
-	public List<ExamExecution> getExamExecutions() {
+	public String getPasswordConfirm() {
+		return passwordConfirm;
+	}
+
+	public void setPasswordConfirm(String passwordConfirm) {
+		this.passwordConfirm = passwordConfirm;
+	}
+
+	public List<ExamExercise> getExamExecutions() {
 		return examExecutions;
 	}
 
-	public void setExamExecutions(List<ExamExecution> examExecutions) {
+	public void setExamExecutions(List<ExamExercise> examExecutions) {
 		this.examExecutions = examExecutions;
 	}
 

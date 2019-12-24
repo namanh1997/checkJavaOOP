@@ -2,7 +2,9 @@ package com.example.check_java_oop.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -11,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -55,9 +58,16 @@ public class ExamFile implements Serializable {
 	@Temporal(TemporalType.TIMESTAMP)
 	@LastModifiedDate
 	private Date updatedAt;
+	
+	@OneToMany(mappedBy = "examFile", cascade = CascadeType.ALL)
+	private List<UserClass> userClasses;
 
 	public ExamFile() {
 		super();
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getFileName() {

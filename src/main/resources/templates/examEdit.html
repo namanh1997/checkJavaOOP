@@ -10,10 +10,13 @@
 	<div class="container main">
 		<div class="content">
 			<div class="mx-auto col-md-4">
-				<h2>Tạo đề</h2>
+				<h2>Sửa đề</h2>
 
-				<form class="center" method="POST" th:action="@{/upload}"
+				<form class="center" method="POST" th:action="@{/exam/update}"
 					th:object=${exam} enctype="multipart/form-data">
+					
+					<input type="hidden" th:field="*{id}" />
+					
 					<div class="form-group">
 						<label for="">Tên đề</label> <input th:field="*{name}" type="text"
 							name="name" class="form-control" placeholder="Tên đề" />

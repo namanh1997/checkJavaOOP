@@ -3,34 +3,45 @@
 <head th:replace="layout :: head"></head>
 
 <body>
-	<nav th:replace="layout :: header"></nav>
+	<header th:replace="layout :: header"></header>
 
-	<div class="container" th:object="${exam}">
-		<h2 th:text="*{name}"></h2>
-		<div
-			th:utext="${#strings.replace( #strings.escapeXml( examFile),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></div>
-		<hr>
-		<h6>Input</h6>
-		<div
-			th:utext="${#strings.replace( #strings.escapeXml( inputFile),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></div>
-		<hr>
-		<h6>Output</h6>
-		<div
-			th:utext="${#strings.replace( #strings.escapeXml( outputFile),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></div>
-		<hr>
-		<form th:object=${examExecution} class="center" method="POST"
-			th:action="@{/uploadExercise}" enctype="multipart/form-data">
-			<div class="form-group">
-				<h6>File bài làm</h6>
-				<div class="custom-file">
-					<input th:field="*{examExecutionData}" type="file" name="file"
-						class="custom-file-input" id="examExecutionFile" /> <label
-						class="custom-file-label" for="examExecutionFile">Ví dụ:
-						Bai1.java</label>
+	<div class="container main" th:object="${exam}">
+		<div class="content">
+			<h2 th:text="*{name}"></h2>
+			<div
+				th:utext="${#strings.replace( #strings.escapeXml( examFile ),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></div>
+			<hr>
+			<h6>Input</h6>
+			<div
+				th:utext="${#strings.replace( #strings.escapeXml( inputFile ),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></div>
+			<hr>
+			<h6>Output</h6>
+			<div
+				th:utext="${#strings.replace( #strings.escapeXml( outputFile ),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></div>
+			<hr>
+			<h6>Example Input</h6>
+			<div class="code"
+				th:utext="${#strings.replace( #strings.escapeXml( exampleInputFile ),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></div>
+			<hr>
+			<h6>Example Output</h6>
+			<div class="code"
+				th:utext="${#strings.replace( #strings.escapeXml( exampleOutputFile),T(java.lang.System).getProperty('line.separator'),'&lt;br /&gt;')}"></div>
+			<hr>
+			<form th:object=${examExercise} class="center" method="POST"
+				th:action="@{/uploadExercise}" enctype="multipart/form-data">
+				<div class="form-group">
+					<h6>File bài làm</h6>
+					<div class="custom-file">
+						<input type="hidden" name="examId" th:value="${exam.id}" /><input
+							th:field="*{examExerciseData}" type="file" name="file"
+							class="custom-file-input" id="examExecutionFile" /> <label
+							class="custom-file-label" for="examExecutionFile">Ví dụ:
+							Bai1.java</label>
+					</div>
 				</div>
-			</div>
-			<button class="btn btn-primary" type="submit">Gửi</button>
-		</form>
+				<button class="btn btn-primary" type="submit">Gửi</button>
+			</form>
+		</div>
 	</div>
 	<!-- /.container -->
 
